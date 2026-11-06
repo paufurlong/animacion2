@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#778dfc" />
+    <title>Comunidad · Prototipo nuevo</title>
+    <link rel="stylesheet" href="https://use.typekit.net/zfz7vsp.css" />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "proxima-nova", "Proxima Nova", Arial, sans-serif;
+        color: #33343a;
+        background: #f2f3f6;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --blue: #3e6ceb;
+        --gray-primary: #33343a;
+        --gray-secondary: #777985;
+        --gray-border: #dfe2e8;
+        --surface-white: #fff;
+        --violet-200: #f1ebfb;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { min-width: 320px; min-height: 100%; margin: 0; }
+      body { background: #f2f3f6; }
+      button, input, textarea { font: inherit; }
+      button { -webkit-tap-highlight-color: transparent; }
+
+      .stage { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }
+      .screen {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: min(360px, 100vw);
+        height: min(1024px, calc(100dvh - 32px));
+        min-height: 640px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 12px 40px rgb(28 30 38 / 18%);
+      }
+      .screen-scroll { min-height: 0; flex: 1 1 auto; overflow-x: hidden; overflow-y: auto; padding-bottom: 88px; scrollbar-width: none; overscroll-behavior-y: contain; }
+      .screen-scroll::-webkit-scrollbar, .events-rail::-webkit-scrollbar { display: none; }
+
+      .hero { position: relative; overflow: hidden; background: #fff; }
+      .background-shape { position: absolute; z-index: 0; top: 96px; left: 0; width: 360px; height: 126px; pointer-events: none; }
+      .status-bar, .welcome, .events-rail { position: relative; z-index: 1; }
+      .status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 0; background: #778dfc; color: #fff; font-size: 15px; font-weight: 600; letter-spacing: -.2px; }
+      .status-icons { width: 48px; height: 16px; }
+      .welcome { height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 20px; background: #778dfc; box-shadow: 0 16px 0 #778dfc; color: #fff; }
+      .welcome-avatar { width: 40px; height: 40px; flex: none; overflow: hidden; border-radius: 50%; object-fit: cover; }
+      .welcome-name { flex: 1; font-size: 16px; font-weight: 600; line-height: 20px; }
+      .header-actions { display: flex; align-items: center; gap: 8px; }
+      .header-action { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+      .header-action img { width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(1); }
+
+      .events-rail { height: 143px; display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; padding: 24px 44px 8px 16px; scrollbar-width: none; }
+      .module { position: sticky; left: 0; z-index: 1; width: 300px; height: 111px; flex: none; transform: translateX(var(--stack-x, 0px)); }
+      .module-label { position: absolute; top: 0; left: 0; right: 0; height: 57px; overflow: hidden; padding: 5px 16px 32px; border-radius: 16px; color: #282834; font-size: 10px; font-weight: 600; line-height: 16px; }
+      .module-label--tasks { background: linear-gradient(90deg, #fff0cd 27.4%, #f3b51c 100%); }
+      .module-label--news { background: linear-gradient(90deg, #f0f3ff 0%, #b5c3fd 100%); }
+      .module-panel { position: absolute; top: 28px; right: 0; left: 0; height: 83px; display: flex; align-items: center; justify-content: space-between; padding: 4px 18px; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .task-copy { width: 164px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+      .task-copy strong { max-width: 100%; overflow: hidden; color: rgba(0,0,0,.9); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+      .progress-track { width: 164px; height: 4px; overflow: hidden; border-radius: 4px; background: #cfd3e1; }
+      .progress-value { display: block; width: 25%; height: 100%; border-radius: inherit; background: #3e6ceb; }
+      .due-date { display: flex; align-items: center; gap: 2px; color: var(--gray-primary); font-size: 12px; line-height: 16px; }
+      .warning-icon { position: relative; width: 16px; height: 16px; flex: none; }
+      .warning-icon img { position: absolute; display: block; max-width: none; }
+      .warning-icon .warning-base { inset: 0; width: 100%; height: 100%; }
+      .warning-icon .warning-shape { inset: 12.5%; width: 75%; height: 75%; }
+      .warning-icon .warning-stem { top: 26.56%; left: 45.31%; width: 9.375%; height: 30.21%; }
+      .warning-icon .warning-dot { top: 61.98%; left: 44.27%; width: 11.46%; height: 11.46%; }
+      .task-art { width: 74px; height: 74px; flex: none; object-fit: cover; transform: rotate(180deg) scaleY(-1); }
+      .chevron { width: 8px; height: 8px; flex: none; border-top: 1.7px solid currentColor; border-right: 1.7px solid currentColor; transform: rotate(45deg); }
+      .task-chevron { width: 20px; height: 20px; flex: none; display: grid; place-items: center; color: #33343a; }
+      .task-chevron::before { width: 6px; height: 6px; border-top: 1.7px solid currentColor; border-right: 1.7px solid currentColor; content: ""; transform: rotate(45deg); }
+
+      .news-panel { padding: 10px 17px; }
+      .news-copy { width: 156px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+      .news-text { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+      .news-copy strong { max-width: 100%; overflow: hidden; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+      .news-copy span { max-width: 100%; overflow: hidden; color: #33343A; font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
+      .text-link { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: #4f6fe8; font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
+      .arrow-right { width: 16px; height: 16px; flex: none; display: block; color: currentColor; }
+      .news-art { width: 74px; height: 74px; flex: none; object-fit: cover; }
+
+      .module-invite { display: flex; align-items: stretch; }
+      .invite-date { width: 93px; height: 111px; flex: none; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 5px 16px 0 8px; border-radius: 16px; background: linear-gradient(137deg, #f0f3ff 7%, #b5c3fd 100%); text-align: center; }
+      .invite-date-content { width: max-content; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+      .invite-date-labels { display: flex; flex-direction: column; align-items: center; gap: 0; }
+      .invite-date img { width: 12px; height: 12px; }
+      .invite-date strong, .invite-date span { font-size: 12px; line-height: 16px; white-space: nowrap; }
+      .invite-date strong { font-weight: 600; }
+      .invite-date span { color: var(--gray-secondary); }
+      .invite-panel { position: absolute; top: 0; right: 0; bottom: 0; left: 66px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 4px 12px; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .invite-details { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+      .invite-title { max-width: 100%; display: flex; align-items: center; gap: 2px; overflow: visible; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+      .invite-title > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+      .invite-title .chevron { width: 16px; height: 16px; display: grid; place-items: center; border: 0; transform: none; }
+      .invite-title .chevron::before { width: 6px; height: 6px; border-top: 1.7px solid currentColor; border-right: 1.7px solid currentColor; content: ""; transform: rotate(45deg); }
+      .invite-place { display: flex; align-items: center; gap: 5px; max-width: 100%; color: #33343A; font-size: 12px; line-height: 16px; white-space: nowrap; }
+      .invite-place .chevron { width: 6px; height: 6px; color: #33343a; }
+      .response-options { display: flex; align-items: center; gap: 8px; }
+      .response-options button { min-width: 40px; height: 34px; padding: 8px 6px; border: 1px solid var(--gray-border); border-radius: 12px; background: #fff; color: var(--gray-secondary); font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
+      .response-options button[aria-pressed="true"] { background: rgb(119 121 133 / 20%); color: #33343a; }
+
+      .module-reminder { overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .reminder-copy { position: absolute; z-index: 1; top: 50%; right: 82px; left: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; transform: translateY(-50%); }
+      .reminder-avatar { width: 24px; height: 24px; overflow: hidden; border-radius: 50%; object-fit: cover; }
+      .reminder-details { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+      .reminder-copy strong { max-width: 100%; overflow: hidden; color: rgba(0,0,0,.9); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
+      .reminder-copy span { max-width: 100%; overflow: hidden; color: var(--gray-primary); font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
+      .reminder-picture { position: absolute; top: 0; right: 0; bottom: 0; width: 93px; display: grid; place-items: center; overflow: hidden; border-radius: 16px; background: linear-gradient(136deg, #f0f3ff 7%, #b5c3fd 112%); }
+      .reminder-picture img { width: 74px; height: 74px; object-fit: contain; }
+      .reminder-link { margin-top: 0; }
+
+      .composer { width: 328px; height: 52px; display: flex; align-items: center; gap: 4px; margin: 8px auto 0; padding: 6px; border: 1px solid #f4f5f7; border-radius: 24px; background: #fff; box-shadow: 0 4px 8px rgb(39 44 150 / 6%); }
+      .composer-trigger { min-width: 0; flex: 1; display: flex; align-items: center; padding: 0 6px; border: 0; background: transparent; color: var(--gray-secondary); text-align: left; font-size: 16px; line-height: 20px; cursor: text; }
+      .composer-actions { display: flex; align-items: center; gap: 2px; }
+      .composer-actions button { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #33343a; cursor: pointer; }
+      .composer-actions svg { width: 22px; height: 22px; }
+      .composer-actions .camera-icon { width: 20px; height: 20px; object-fit: contain; }
+
+      .feed-cluster { position: relative; width: 100%; }
+      .feed-cluster::after { position: absolute; z-index: 2; top: 100%; right: -16px; left: -16px; height: 32px; background: #fff; content: ""; pointer-events: none; }
+      .tabs { height: 42px; display: flex; align-items: center; gap: 8px; margin: 24px 16px 0; }
+      .tab { height: 42px; padding: 0 12px; border: 0; border-radius: 12px; background: rgba(255,255,255,.7); color: var(--gray-secondary); font-size: 14px; line-height: 18px; cursor: pointer; }
+      .tab.is-active { border-radius: 12px 16px 0 0; background: #fff; color: var(--gray-primary); filter: drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
+      .feed { margin-top: 0; border-radius: 4px 4px 0 0; background: #fff; filter: drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
+      .post { display: flex; flex-direction: column; gap: 12px; padding: 24px 16px 20px; background: #fff; }
+      .post-header { min-width: 0; height: 40px; display: flex; align-items: center; gap: 8px; }
+      .post-avatar { width: 40px; height: 40px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; color: #4013a2; font-size: 16px; font-weight: 600; }
+      .post-avatar--lilac { background: #f1ebfb; }
+      .post-avatar--yellow { background: #fcf0d6; }
+      .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .post-author { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+      .post-author strong { overflow: hidden; color: var(--gray-primary); font-size: 16px; font-weight: 600; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
+      .post-author time { color: var(--gray-secondary); font-size: 12px; line-height: 16px; }
+      .post-tools { display: flex; align-items: center; gap: 4px; }
+      .post-tools button { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+      .post-tools img { width: 24px; height: 24px; object-fit: contain; }
+      .post-copy { margin: 0; color: var(--gray-primary); font-size: 14px; line-height: 18px; }
+      .post-actions { display: flex; align-items: center; justify-content: space-between; min-height: 24px; }
+      .post-action-set { display: flex; align-items: center; gap: 16px; }
+      .post-action { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; cursor: pointer; }
+      .post-action img { width: 24px; height: 24px; object-fit: contain; }
+      .post-action img.comment-icon { width: 20px; height: 20px; }
+      .post-action.is-liked { color: #3e6ceb; }
+      .post-seen { color: var(--gray-secondary); font-size: 14px; line-height: 18px; white-space: nowrap; }
+
+      .bottom-nav { position: absolute; z-index: 5; right: 16px; bottom: 16px; left: 16px; height: 56px; display: flex; align-items: stretch; justify-content: space-between; overflow: hidden; padding: 0 8px; border-radius: 32px; background: rgb(255 255 255 / 95%); box-shadow: 3px 7px 8px -3px rgb(0 0 0 / 10%); }
+      .nav-item { position: relative; width: 64px; height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 4px; border: 0; background: transparent; color: #33343a; font-size: 12px; line-height: 16px; cursor: pointer; }
+      .nav-item img { width: 24px; height: 24px; object-fit: contain; }
+      .nav-item span { white-space: nowrap; }
+      .nav-item.is-active { color: #3e6ceb; font-weight: 600; }
+      .nav-item.is-active::before { position: absolute; top: 0; left: 50%; width: 31px; height: 3px; border-radius: 0 0 2px 2px; background: #4f6fe8; content: ""; transform: translateX(-50%); }
+
+      .toast { position: absolute; z-index: 10; right: 16px; bottom: 84px; left: 16px; padding: 10px 14px; border-radius: 12px; background: #33343a; color: #fff; font-size: 13px; line-height: 18px; text-align: center; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .18s ease, transform .18s ease; }
+      .toast.is-visible { opacity: 1; transform: translateY(0); }
+      dialog { width: min(328px, calc(100vw - 32px)); padding: 20px; border: 0; border-radius: 16px; background: #fff; color: var(--gray-primary); box-shadow: 0 12px 40px rgb(0 0 0 / 24%); }
+      dialog::backdrop { background: rgb(34 36 44 / 42%); }
+      .dialog-title { margin: 0 0 12px; font-size: 18px; line-height: 24px; }
+      .dialog-field { width: 100%; min-height: 104px; resize: vertical; padding: 12px; border: 1px solid var(--gray-border); border-radius: 10px; font-size: 14px; line-height: 20px; }
+      .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+      .dialog-actions button { min-height: 36px; padding: 0 12px; border: 1px solid var(--gray-border); border-radius: 10px; background: #fff; cursor: pointer; }
+      .dialog-actions .primary { border-color: var(--blue); background: var(--blue); color: #fff; }
+
+      @media (max-width: 400px) {
+        .stage { min-height: 100dvh; padding: 0; }
+        .screen { width: min(360px, 100vw); height: 100dvh; min-height: 0; box-shadow: none; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } .module { transform: none !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="stage">
+      <section class="screen" aria-label="Comunidad">
+        <div class="screen-scroll">
+          <header class="hero">
+            <img class="background-shape" src="assets/background-shape.svg" alt="" />
+            <div class="status-bar" aria-label="9:41, señal, Wi-Fi y batería">
+              <span>9:41</span>
+              <svg class="status-icons" viewBox="0 0 48 16" aria-hidden="true"><path d="M2 13h2V9H2zm4 0h2V6H6zm4 0h2V3h-2z" fill="currentColor"/><path d="M17 6.5c3.8-3.4 9.2-3.4 13 0M19.8 9c2.2-2 5.2-2 7.4 0M22.6 11.5c.6-.6 1.4-.6 2 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="34" y="3" width="11" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="36" y="5" width="7" height="6" rx="1" fill="currentColor"/><path d="M46 6v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="welcome">
+              <img class="welcome-avatar" src="assets/carla.png" alt="" />
+              <span class="welcome-name">Hola, Carla</span>
+              <div class="header-actions">
+                <button class="header-action" type="button" aria-label="Buscar"><img src="assets/search.png" alt="" /></button>
+                <button class="header-action" type="button" aria-label="Notificaciones"><img src="assets/notifications.png" alt="" /></button>
+              </div>
+            </div>
+            <section class="events-rail" aria-label="Eventos y novedades">
+              <article class="module" aria-label="Curso anual obligatorio">
+                <div class="module-label module-label--tasks">CURSO ANUAL OBLIGATORIO</div>
+                <div class="module-panel">
+                  <div class="task-copy">
+                    <strong>1 de 4 tareas completadas</strong>
+                    <div class="progress-track" aria-label="25 por ciento completado"><span class="progress-value"></span></div>
+                    <div class="due-date">
+                      <span class="warning-icon" aria-hidden="true"><img class="warning-base" src="assets/warning-base.svg" alt=""/><img class="warning-shape" src="assets/warning-shape.svg" alt=""/><img class="warning-stem" src="assets/warning-stem.svg" alt=""/><img class="warning-dot" src="assets/warning-dot.svg" alt=""/></span>
+                      <span>Vence hoy</span>
+                    </div>
+                  </div>
+                  <img class="task-art" src="assets/task-illustration.png" alt="" />
+                  <span class="task-chevron" aria-hidden="true"></span>
+                </div>
+              </article>
+              <article class="module" aria-label="Novedad: Nuevo código de ética">
+                <div class="module-label module-label--news">NOVEDAD</div>
+                <div class="module-panel news-panel">
+                  <div class="news-copy">
+                    <div class="news-text">
+                      <strong>Nuevo código de ética</strong>
+                      <span>Firmalo antes del 20/10.</span>
+                    </div>
+                    <button class="text-link" type="button" data-toast="El detalle de la novedad está listo para explorar">Ver detalle <svg class="arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg></button>
+                  </div>
+                  <img class="news-art" src="assets/ethics-megaphone.png" alt="" />
+                </div>
+              </article>
+              <article class="module module-invite" aria-label="Invitación al cumpleaños de Juancho">
+                <div class="invite-date">
+                  <div class="invite-date-content">
+                    <img src="assets/calendar.svg" alt="" />
+                    <div class="invite-date-labels">
+                      <strong>JUE 5/11</strong>
+                      <span>20 HS</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="invite-panel">
+                  <div class="invite-details">
+                    <div class="invite-title"><span>Cumple de Juancho</span><span class="chevron" aria-hidden="true"></span></div>
+                    <div class="invite-place">HIT - Av. del Libertador 100</div>
+                  </div>
+                  <div class="response-options" role="group" aria-label="Confirmar asistencia">
+                    <button type="button" aria-pressed="false">Sí</button>
+                    <button type="button" aria-pressed="false">No</button>
+                    <button type="button" aria-pressed="false">Tal vez</button>
+                  </div>
+                </div>
+              </article>
+              <article class="module module-reminder" aria-label="Cumpleaños de Virginia González">
+                <div class="reminder-copy">
+                  <img class="reminder-avatar" src="assets/virginia.jpg" alt="" />
+                  <div class="reminder-details">
+                    <strong>Virginia González</strong>
+                    <span>Cumpleaños - Hoy</span>
+                    <button class="text-link reminder-link" type="button" data-toast="¡Felicidades enviadas a Virginia!">Felicitar <svg class="arrow-right" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8.5 3.5 13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" /></svg></button>
+                  </div>
+                </div>
+                <div class="reminder-picture"><img src="assets/birthday-cake.png" alt="" /></div>
+              </article>
+              <article class="module module-reminder" aria-label="Aniversario de Melina Mavris y 2 más">
+                <div class="reminder-copy">
+                  <img class="reminder-avatar" src="assets/melina.png" alt="" />
+                  <div class="reminder-details">
+                    <strong>Melina Mavris y 2 más</strong>
+                    <span>Aniversario - Mañana</span>
+                  </div>
+                </div>
+                <div class="reminder-picture"><img src="assets/anniversary-gifts.png" alt="" /></div>
+              </article>
+            </section>
+          </header>
+
+          <div class="composer">
+            <button class="composer-trigger" type="button" id="open-composer">Escribí una publicación</button>
+            <div class="composer-actions">
+              <button type="button" aria-label="Agregar una foto" data-toast="Adjuntar una foto"><img class="camera-icon" src="assets/camera-icon.svg" alt="" /></button>
+              <button type="button" aria-label="Grabar audio" data-toast="Grabar un audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3m-3 0h6"/></svg></button>
+            </div>
+          </div>
+
+          <div class="feed-cluster">
+            <nav class="tabs" aria-label="Secciones de comunidad">
+              <button type="button" class="tab is-active">Muro</button>
+              <button type="button" class="tab">Grupos</button>
+              <button type="button" class="tab">Noticias</button>
+              <button type="button" class="tab">Marketplace</button>
+            </nav>
+
+            <section class="feed" aria-label="Publicaciones">
+            <article class="post">
+              <header class="post-header">
+                <span class="post-avatar post-avatar--lilac">PF</span>
+                <div class="post-author"><strong>Paula Furlong</strong><time datetime="2026-10-11">Oct 11, 2026</time></div>
+                <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
+              </header>
+              <p class="post-copy">Hola team! ¿alguien encontró un cargador de mac la semana pasada en la ofi?</p>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+            </article>
+            <article class="post">
+              <header class="post-header">
+                <span class="post-avatar post-avatar--yellow">CG</span>
+                <div class="post-author"><strong>Carlos González</strong><time datetime="2026-10-11">Oct 11, 2026</time></div>
+                <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
+              </header>
+              <p class="post-copy">Hay medialunas en la cocina!!</p>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+            </article>
+            <article class="post">
+              <header class="post-header">
+                <span class="post-avatar"><img src="assets/carla.png" alt="" /></span>
+                <div class="post-author"><strong>Carla G.</strong><time datetime="2026-10-14">Oct 14, 2026</time></div>
+                <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
+              </header>
+              <p class="post-copy">Hola team! ¿alguien encontró un cargador de mac la semana pasada en la ofi?</p>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+            </article>
+            <article class="post">
+              <header class="post-header">
+                <span class="post-avatar"><img src="assets/marina.png" alt="" /></span>
+                <div class="post-author"><strong>Marina Rodriguez</strong><time datetime="2026-10-15">Oct 15, 2026</time></div>
+                <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
+              </header>
+              <p class="post-copy">Hay medialunas en la cocina!!</p>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+            </article>
+            </section>
+          </div>
+        </div>
+
+        <nav class="bottom-nav" aria-label="Navegación principal">
+          <button class="nav-item is-active" type="button"><img src="assets/nav-home.png" alt=""/><span>Home</span></button>
+          <button class="nav-item" type="button"><img src="assets/nav-chat.png" alt=""/><span>Mensajes</span></button>
+          <button class="nav-item" type="button"><img src="assets/nav-apps.png" alt=""/><span>Apps</span></button>
+          <button class="nav-item" type="button"><img src="assets/nav-awards.png" alt=""/><span>Distinciones</span></button>
+          <button class="nav-item" type="button"><img src="assets/nav-profile.png" alt=""/><span>Perfil</span></button>
+        </nav>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <dialog id="compose-dialog">
+      <form id="compose-form">
+        <h1 class="dialog-title">Escribí una publicación</h1>
+        <textarea class="dialog-field" id="post-text" placeholder="¿Qué querés compartir?" required></textarea>
+        <div class="dialog-actions"><button type="button" id="cancel-post">Cancelar</button><button class="primary" type="submit">Publicar</button></div>
+      </form>
+    </dialog>
+
+    <script>
+      const toast = document.getElementById('toast');
+      let toastTimer;
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 2200);
+      }
+
+      const eventsRail = document.querySelector('.events-rail');
+      const eventCards = [...eventsRail.querySelectorAll('.module')];
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let stackFrame = 0;
+
+      function updateCardStack() {
+        if (reduceMotion.matches || eventCards.length < 2) return;
+        const step = eventCards[0].offsetWidth + parseFloat(getComputedStyle(eventsRail).columnGap || 0);
+        if (!step) return;
+
+        const position = eventsRail.scrollLeft / step;
+        const currentIndex = Math.min(eventCards.length - 1, Math.floor(position));
+        const progress = Math.min(1, Math.max(0, position - currentIndex));
+        const stackStep = 3;
+        const lastIndex = eventCards.length - 1;
+        const railStyle = getComputedStyle(eventsRail);
+        const paddingLeft = parseFloat(railStyle.paddingLeft) || 0;
+        const centeredLastLeft = (eventsRail.clientWidth - eventCards[lastIndex].offsetWidth) / 2 - paddingLeft;
+        const nextIndex = currentIndex + 1;
+        const nextCard = eventCards[nextIndex];
+
+        eventCards.forEach((card, index) => {
+          const stackX = index === 0 ? 0 : index <= currentIndex ? (index === lastIndex ? centeredLastLeft : index * stackStep) : 0;
+          card.style.setProperty('--stack-x', `${stackX}px`);
+          card.style.zIndex = String(index <= currentIndex ? index + 1 : 1);
+        });
+
+        if (nextCard) {
+          const stackProgress = Math.min(1, Math.max(0, (progress - 0.4) / 0.6));
+          const naturalLeft = step * (1 - progress);
+          const startX = step + currentIndex * stackStep;
+          const endX = nextIndex === lastIndex ? centeredLastLeft : nextIndex * stackStep;
+          const targetLeft = startX + (endX - startX) * stackProgress;
+          nextCard.style.setProperty('--stack-x', `${targetLeft - naturalLeft}px`);
+          nextCard.style.zIndex = String(currentIndex + 2);
+        }
+      }
+
+      eventsRail.addEventListener('scroll', () => {
+        if (reduceMotion.matches) return;
+        if (!stackFrame) {
+          stackFrame = window.requestAnimationFrame(() => {
+            stackFrame = 0;
+            updateCardStack();
+          });
+        }
+      }, { passive: true });
+
+      document.querySelectorAll('.response-options button').forEach((button) => {
+        button.addEventListener('click', () => {
+          button.parentElement.querySelectorAll('button').forEach((choice) => choice.setAttribute('aria-pressed', String(choice === button)));
+        });
+      });
+
+      document.querySelectorAll('[data-toast]').forEach((button) => {
+        button.addEventListener('click', () => showToast(button.dataset.toast));
+      });
+
+      document.querySelectorAll('.header-action').forEach((button) => {
+        button.addEventListener('click', () => showToast(button.getAttribute('aria-label')));
+      });
+
+      document.querySelectorAll('.tab').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('is-active', tab === button));
+        });
+      });
+
+      document.querySelectorAll('.nav-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          document.querySelectorAll('.nav-item').forEach((item) => item.classList.toggle('is-active', item === button));
+        });
+      });
+
+      document.querySelectorAll('[data-like]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const count = button.querySelector('span');
+          const liked = button.classList.toggle('is-liked');
+          count.textContent = String(Number(count.textContent) + (liked ? 1 : -1));
+        });
+      });
+
+      const dialog = document.getElementById('compose-dialog');
+      const postText = document.getElementById('post-text');
+      document.getElementById('open-composer').addEventListener('click', () => dialog.showModal());
+      document.getElementById('cancel-post').addEventListener('click', () => dialog.close());
+      document.getElementById('compose-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const content = postText.value.trim();
+        if (!content) return;
+        const article = document.createElement('article');
+        article.className = 'post';
+        article.innerHTML = `<header class="post-header"><span class="post-avatar"><img src="assets/carla.png" alt="" /></span><div class="post-author"><strong>Carla G.</strong><time>Ahora</time></div><div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div></header><p class="post-copy"></p><div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>0</span></button><button class="post-action" type="button"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>0</span></button></div><span class="post-seen">Visto por 0</span></div>`;
+        article.querySelector('.post-copy').textContent = content;
+        article.querySelector('[data-like]').addEventListener('click', (e) => {
+          const button = e.currentTarget;
+          const count = button.querySelector('span');
+          const liked = button.classList.toggle('is-liked');
+          count.textContent = String(Number(count.textContent) + (liked ? 1 : -1));
+        });
+        document.querySelector('.feed').prepend(article);
+        postText.value = '';
+        dialog.close();
+        document.querySelector('.screen-scroll').scrollTo({top: 0, behavior: 'smooth'});
+        showToast('Publicación compartida');
+      });
+    </script>
+  </body>
+</html>
