@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#778dfc" />
+    <meta name="theme-color" content="#b1a5ff" />
     <title>Comunidad · Prototipo nuevo</title>
     <link rel="stylesheet" href="https://use.typekit.net/zfz7vsp.css" />
     <style>
@@ -11,21 +11,24 @@
         color-scheme: light;
         font-family: "proxima-nova", "Proxima Nova", Arial, sans-serif;
         color: #33343a;
-        background: #f2f3f6;
+        background: #f4f5f7;
         font-synthesis: none;
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         --blue: #3e6ceb;
+        --action-blue: #4f6fe8;
         --gray-primary: #33343a;
         --gray-secondary: #777985;
         --gray-border: #dfe2e8;
         --surface-white: #fff;
         --violet-200: #f1ebfb;
+        --page-background: #f4f5f7;
+        --brand-lilac: #b1a5ff;
       }
 
       * { box-sizing: border-box; }
       html, body { min-width: 320px; min-height: 100%; margin: 0; }
-      body { background: #f2f3f6; }
+      body { background: var(--page-background); }
       button, input, textarea { font: inherit; }
       button { -webkit-tap-highlight-color: transparent; }
 
@@ -38,30 +41,31 @@
         height: min(1024px, calc(100dvh - 32px));
         min-height: 640px;
         overflow: hidden;
-        background: #fff;
-        box-shadow: 0 12px 40px rgb(28 30 38 / 18%);
+        background: var(--page-background);
+        box-shadow: none;
       }
       .screen-scroll { min-height: 0; flex: 1 1 auto; overflow-x: hidden; overflow-y: auto; padding-bottom: 88px; scrollbar-width: none; overscroll-behavior-y: contain; }
       .screen-scroll::-webkit-scrollbar, .events-rail::-webkit-scrollbar { display: none; }
 
-      .hero { position: relative; overflow: hidden; background: #fff; }
-      .background-shape { position: absolute; z-index: 0; top: 96px; left: 0; width: 360px; height: 126px; pointer-events: none; }
+      .hero { position: relative; overflow: hidden; background: transparent; }
+      .background-shape { position: absolute; z-index: 0; top: 92px; left: 0; width: 360px; height: 126px; pointer-events: none; }
       .status-bar, .welcome, .events-rail { position: relative; z-index: 1; }
-      .status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 0; background: #778dfc; color: #fff; font-size: 15px; font-weight: 600; letter-spacing: -.2px; }
+      .status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px 0; background: var(--brand-lilac); color: var(--gray-primary); font-size: 14px; font-weight: 600; letter-spacing: -.28px; }
       .status-icons { width: 48px; height: 16px; }
-      .welcome { height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 20px; background: #778dfc; box-shadow: 0 16px 0 #778dfc; color: #fff; }
-      .welcome-avatar { width: 40px; height: 40px; flex: none; overflow: hidden; border-radius: 50%; object-fit: cover; }
-      .welcome-name { flex: 1; font-size: 16px; font-weight: 600; line-height: 20px; }
+      .welcome { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 8px; background: var(--brand-lilac); }
+      .welcome-logo { width: 98px; height: 18px; flex: none; object-fit: contain; }
+      .welcome-avatar { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: var(--blue); }
+      .welcome-avatar img { width: 67px; height: 50px; flex: none; object-fit: contain; }
       .header-actions { display: flex; align-items: center; gap: 8px; }
       .header-action { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
-      .header-action img { width: 24px; height: 24px; object-fit: contain; filter: brightness(0) invert(1); }
+      .header-action img { width: 24px; height: 24px; object-fit: contain; }
 
-      .events-rail { height: 143px; display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; padding: 24px 44px 8px 16px; scrollbar-width: none; }
-      .module { position: sticky; left: 0; z-index: 1; width: 300px; height: 111px; flex: none; transform: translateX(var(--stack-x, 0px)); }
-      .module-label { position: absolute; top: 0; left: 0; right: 0; height: 57px; overflow: hidden; padding: 5px 16px 32px; border-radius: 16px; color: #282834; font-size: 10px; font-weight: 600; line-height: 16px; }
+      .events-rail { height: 127px; display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; overflow-y: hidden; padding: 8px 44px 8px 16px; scrollbar-width: none; touch-action: pan-y pinch-zoom; }
+      .module { position: sticky; left: 0; z-index: 1; width: 300px; height: 111px; flex: none; overflow: hidden; border: 1px solid var(--gray-border); border-radius: 16px; transform: translateX(var(--stack-x, 0px)); will-change: transform; }
+      .module-label { position: absolute; top: 0; left: 0; right: 0; height: 57px; overflow: hidden; padding: 5px 16px 32px; color: #282834; font-size: 10px; font-weight: 600; line-height: 16px; }
       .module-label--tasks { background: linear-gradient(90deg, #fff0cd 27.4%, #f3b51c 100%); }
       .module-label--news { background: linear-gradient(90deg, #f0f3ff 0%, #b5c3fd 100%); }
-      .module-panel { position: absolute; top: 28px; right: 0; left: 0; height: 83px; display: flex; align-items: center; justify-content: space-between; padding: 4px 18px; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .module-panel { position: absolute; top: 28px; right: 0; left: 0; height: 83px; display: flex; align-items: center; justify-content: space-between; padding: 4px 18px; border-radius: 16px 16px 0 0; background: #fff; }
       .task-copy { width: 164px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
       .task-copy strong { max-width: 100%; overflow: hidden; color: rgba(0,0,0,.9); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
       .progress-track { width: 164px; height: 4px; overflow: hidden; border-radius: 4px; background: #cfd3e1; }
@@ -83,19 +87,19 @@
       .news-text { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
       .news-copy strong { max-width: 100%; overflow: hidden; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
       .news-copy span { max-width: 100%; overflow: hidden; color: #33343A; font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
-      .text-link { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: #4f6fe8; font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
+      .text-link { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: var(--action-blue); font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
       .arrow-right { width: 16px; height: 16px; flex: none; display: block; color: currentColor; }
       .news-art { width: 74px; height: 74px; flex: none; object-fit: cover; }
 
       .module-invite { display: flex; align-items: stretch; }
-      .invite-date { width: 93px; height: 111px; flex: none; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 5px 16px 0 8px; border-radius: 16px; background: linear-gradient(137deg, #f0f3ff 7%, #b5c3fd 100%); text-align: center; }
+      .invite-date { width: 93px; height: 100%; flex: none; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 5px 16px 0 8px; background: linear-gradient(137deg, #f0f3ff 7%, #b5c3fd 100%); text-align: center; }
       .invite-date-content { width: max-content; display: flex; flex-direction: column; align-items: center; gap: 2px; }
       .invite-date-labels { display: flex; flex-direction: column; align-items: center; gap: 0; }
       .invite-date img { width: 12px; height: 12px; }
       .invite-date strong, .invite-date span { font-size: 12px; line-height: 16px; white-space: nowrap; }
       .invite-date strong { font-weight: 600; }
       .invite-date span { color: var(--gray-secondary); }
-      .invite-panel { position: absolute; top: 0; right: 0; bottom: 0; left: 66px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 4px 12px; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .invite-panel { position: absolute; top: 0; right: 0; bottom: 0; left: 66px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 4px 12px; border-radius: 16px 0 0 16px; background: #fff; }
       .invite-details { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
       .invite-title { max-width: 100%; display: flex; align-items: center; gap: 2px; overflow: visible; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; white-space: nowrap; }
       .invite-title > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -107,35 +111,35 @@
       .response-options button { min-width: 40px; height: 34px; padding: 8px 6px; border: 1px solid var(--gray-border); border-radius: 12px; background: #fff; color: var(--gray-secondary); font-size: 12px; font-weight: 600; line-height: 16px; cursor: pointer; }
       .response-options button[aria-pressed="true"] { background: rgb(119 121 133 / 20%); color: #33343a; }
 
-      .module-reminder { overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 2px 4px rgb(40 40 52 / 10%); }
+      .module-reminder { overflow: hidden; border-radius: 16px; background: #fff; }
       .reminder-copy { position: absolute; z-index: 1; top: 50%; right: 82px; left: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; transform: translateY(-50%); }
       .reminder-avatar { width: 24px; height: 24px; overflow: hidden; border-radius: 50%; object-fit: cover; }
       .reminder-details { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
       .reminder-copy strong { max-width: 100%; overflow: hidden; color: rgba(0,0,0,.9); font-size: 14px; font-weight: 600; line-height: 18px; text-overflow: ellipsis; white-space: nowrap; }
       .reminder-copy span { max-width: 100%; overflow: hidden; color: var(--gray-primary); font-size: 12px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; }
-      .reminder-picture { position: absolute; top: 0; right: 0; bottom: 0; width: 93px; display: grid; place-items: center; overflow: hidden; border-radius: 16px; background: linear-gradient(136deg, #f0f3ff 7%, #b5c3fd 112%); }
+      .reminder-picture { position: absolute; top: 0; right: 0; bottom: 0; width: 93px; display: grid; place-items: center; overflow: hidden; border-radius: 16px 0 0 16px; background: linear-gradient(136deg, #f0f3ff 7%, #b5c3fd 112%); }
       .reminder-picture img { width: 74px; height: 74px; object-fit: contain; }
       .reminder-link { margin-top: 0; }
 
-      .composer { width: 328px; height: 52px; display: flex; align-items: center; gap: 4px; margin: 8px auto 0; padding: 6px; border: 1px solid #f4f5f7; border-radius: 24px; background: #fff; box-shadow: 0 4px 8px rgb(39 44 150 / 6%); }
-      .composer-trigger { min-width: 0; flex: 1; display: flex; align-items: center; padding: 0 6px; border: 0; background: transparent; color: var(--gray-secondary); text-align: left; font-size: 16px; line-height: 20px; cursor: text; }
+      .composer { width: 328px; height: 52px; display: flex; align-items: center; gap: 4px; margin: 8px auto 0; padding: 6px; border: 1px solid var(--gray-border); border-radius: 24px; background: #fff; box-shadow: none; }
+      .composer-trigger { min-width: 0; flex: 1; display: flex; align-items: center; padding: 0 6px; border: 0; background: transparent; color: var(--gray-secondary); text-align: left; font-size: 14px; line-height: 18px; cursor: text; }
       .composer-actions { display: flex; align-items: center; gap: 2px; }
       .composer-actions button { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: #33343a; cursor: pointer; }
       .composer-actions svg { width: 22px; height: 22px; }
       .composer-actions .camera-icon { width: 20px; height: 20px; object-fit: contain; }
 
       .feed-cluster { position: relative; width: 100%; }
-      .feed-cluster::after { position: absolute; z-index: 2; top: 100%; right: -16px; left: -16px; height: 32px; background: #fff; content: ""; pointer-events: none; }
-      .tabs { height: 42px; display: flex; align-items: center; gap: 8px; margin: 24px 16px 0; }
-      .tab { height: 42px; padding: 0 12px; border: 0; border-radius: 12px; background: rgba(255,255,255,.7); color: var(--gray-secondary); font-size: 14px; line-height: 18px; cursor: pointer; }
-      .tab.is-active { border-radius: 12px 16px 0 0; background: #fff; color: var(--gray-primary); filter: drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
-      .feed { margin-top: 0; border-radius: 4px 4px 0 0; background: #fff; filter: drop-shadow(0 6px 8px rgba(0,0,0,.1)); }
-      .post { display: flex; flex-direction: column; gap: 12px; padding: 24px 16px 20px; background: #fff; }
+      .tabs { height: 46px; display: flex; align-items: stretch; gap: 24px; margin: 16px 16px 0; padding: 0 16px; border: 1px solid var(--gray-border); border-radius: 12px 12px 0 0; background: #fff; }
+      .tab { position: relative; height: 45px; padding: 0; border: 0; background: transparent; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; cursor: pointer; }
+      .tab.is-active { color: var(--blue); }
+      .tab.is-active::after { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--blue); content: ""; }
+      .feed { margin: 0 16px; overflow: hidden; border: 1px solid var(--gray-border); border-top: 0; border-radius: 0 0 12px 12px; background: #fff; }
+      .post { display: flex; flex-direction: column; gap: 12px; padding: 24px 16px; border-bottom: 1px solid #f4f5f7; background: #fff; }
       .post-header { min-width: 0; height: 40px; display: flex; align-items: center; gap: 8px; }
-      .post-avatar { width: 40px; height: 40px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 50%; color: #4013a2; font-size: 16px; font-weight: 600; }
+      .post-avatar { width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; color: #4013a2; font-size: 16px; font-weight: 600; }
       .post-avatar--lilac { background: #f1ebfb; }
       .post-avatar--yellow { background: #fcf0d6; }
-      .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .post-avatar img { width: 67px; height: 50px; flex: none; object-fit: contain; }
       .post-author { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px; }
       .post-author strong { overflow: hidden; color: var(--gray-primary); font-size: 16px; font-weight: 600; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; }
       .post-author time { color: var(--gray-secondary); font-size: 12px; line-height: 16px; }
@@ -147,16 +151,17 @@
       .post-action-set { display: flex; align-items: center; gap: 16px; }
       .post-action { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: transparent; color: var(--gray-primary); font-size: 14px; font-weight: 600; line-height: 18px; cursor: pointer; }
       .post-action img { width: 24px; height: 24px; object-fit: contain; }
-      .post-action img.comment-icon { width: 20px; height: 20px; }
+      .comment-icon { width: 24px; height: 24px; display: grid; place-items: center; }
+      .post-action .comment-icon img { width: auto; height: auto; }
       .post-action.is-liked { color: #3e6ceb; }
       .post-seen { color: var(--gray-secondary); font-size: 14px; line-height: 18px; white-space: nowrap; }
 
-      .bottom-nav { position: absolute; z-index: 5; right: 16px; bottom: 16px; left: 16px; height: 56px; display: flex; align-items: stretch; justify-content: space-between; overflow: hidden; padding: 0 8px; border-radius: 32px; background: rgb(255 255 255 / 95%); box-shadow: 3px 7px 8px -3px rgb(0 0 0 / 10%); }
-      .nav-item { position: relative; width: 64px; height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 4px; border: 0; background: transparent; color: #33343a; font-size: 12px; line-height: 16px; cursor: pointer; }
+      .bottom-nav { position: absolute; z-index: 5; bottom: 16px; left: 50%; width: min(320px, calc(100% - 32px)); height: 57px; display: flex; align-items: stretch; justify-content: space-between; overflow: hidden; padding: 0 8px; border-top: 1px solid var(--gray-border); border-radius: 32px; background: rgb(255 255 255 / 95%); box-shadow: 2px 4px 14.2px -7px rgb(0 0 0 / 10%); transform: translateX(-50%); }
+      .nav-item { position: relative; min-width: 0; height: 56px; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0 4px; border: 0; background: transparent; color: #33343a; font-size: 10px; line-height: 16px; cursor: pointer; }
       .nav-item img { width: 24px; height: 24px; object-fit: contain; }
       .nav-item span { white-space: nowrap; }
-      .nav-item.is-active { color: #3e6ceb; font-weight: 600; }
-      .nav-item.is-active::before { position: absolute; top: 0; left: 50%; width: 31px; height: 3px; border-radius: 0 0 2px 2px; background: #4f6fe8; content: ""; transform: translateX(-50%); }
+      .nav-item.is-active { color: var(--blue); font-weight: 600; }
+      .nav-item.is-active::before { position: absolute; top: 0; left: 50%; width: 31px; height: 3px; border-radius: 0 0 2px 2px; background: var(--action-blue); content: ""; transform: translateX(-50%); }
 
       .toast { position: absolute; z-index: 10; right: 16px; bottom: 84px; left: 16px; padding: 10px 14px; border-radius: 12px; background: #33343a; color: #fff; font-size: 13px; line-height: 18px; text-align: center; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .18s ease, transform .18s ease; }
       .toast.is-visible { opacity: 1; transform: translateY(0); }
@@ -180,17 +185,17 @@
       <section class="screen" aria-label="Comunidad">
         <div class="screen-scroll">
           <header class="hero">
-            <img class="background-shape" src="assets/background-shape.svg" alt="" />
+            <img class="background-shape" src="assets/background-shape-figma.svg" alt="" />
             <div class="status-bar" aria-label="9:41, señal, Wi-Fi y batería">
               <span>9:41</span>
               <svg class="status-icons" viewBox="0 0 48 16" aria-hidden="true"><path d="M2 13h2V9H2zm4 0h2V6H6zm4 0h2V3h-2z" fill="currentColor"/><path d="M17 6.5c3.8-3.4 9.2-3.4 13 0M19.8 9c2.2-2 5.2-2 7.4 0M22.6 11.5c.6-.6 1.4-.6 2 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="34" y="3" width="11" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="36" y="5" width="7" height="6" rx="1" fill="currentColor"/><path d="M46 6v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </div>
             <div class="welcome">
-              <img class="welcome-avatar" src="assets/carla.png" alt="" />
-              <span class="welcome-name">Hola, Carla</span>
+              <img class="welcome-logo" src="assets/logo.png" alt="humand" />
               <div class="header-actions">
                 <button class="header-action" type="button" aria-label="Buscar"><img src="assets/search.png" alt="" /></button>
                 <button class="header-action" type="button" aria-label="Notificaciones"><img src="assets/notifications.png" alt="" /></button>
+                <span class="welcome-avatar"><img src="assets/header-avatar.png" alt="Carla" /></span>
               </div>
             </div>
             <section class="events-rail" aria-label="Eventos y novedades">
@@ -287,21 +292,21 @@
             <section class="feed" aria-label="Publicaciones">
             <article class="post">
               <header class="post-header">
-                <span class="post-avatar post-avatar--lilac">PF</span>
+                <span class="post-avatar post-avatar--lilac"><img src="assets/paula.png" alt="" /></span>
                 <div class="post-author"><strong>Paula Furlong</strong><time datetime="2026-10-11">Oct 11, 2026</time></div>
                 <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
               </header>
               <p class="post-copy">Hola team! ¿alguien encontró un cargador de mac la semana pasada en la ofi?</p>
-              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><span class="comment-icon"><img src="assets/comment-figma.svg" alt=""/></span><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
             </article>
             <article class="post">
               <header class="post-header">
-                <span class="post-avatar post-avatar--yellow">CG</span>
+                <span class="post-avatar post-avatar--yellow"><img src="assets/carlos.png" alt="" /></span>
                 <div class="post-author"><strong>Carlos González</strong><time datetime="2026-10-11">Oct 11, 2026</time></div>
                 <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
               </header>
               <p class="post-copy">Hay medialunas en la cocina!!</p>
-              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><span class="comment-icon"><img src="assets/comment-figma.svg" alt=""/></span><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
             </article>
             <article class="post">
               <header class="post-header">
@@ -310,7 +315,7 @@
                 <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
               </header>
               <p class="post-copy">Hola team! ¿alguien encontró un cargador de mac la semana pasada en la ofi?</p>
-              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><span class="comment-icon"><img src="assets/comment-figma.svg" alt=""/></span><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
             </article>
             <article class="post">
               <header class="post-header">
@@ -319,7 +324,7 @@
                 <div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div>
               </header>
               <p class="post-copy">Hay medialunas en la cocina!!</p>
-              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
+              <div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>10</span></button><button class="post-action" type="button" data-toast="Abrir comentarios"><span class="comment-icon"><img src="assets/comment-figma.svg" alt=""/></span><span>2</span></button></div><span class="post-seen">Visto por 2</span></div>
             </article>
             </section>
           </div>
@@ -402,6 +407,67 @@
         }
       }, { passive: true });
 
+      // Un gesto recorre más carrusel y conserva impulso al levantar el dedo.
+      const scrollGain = 1.8;
+      let gesture = null;
+      let momentumFrame = 0;
+      let suppressClick = false;
+
+      eventsRail.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch') return;
+        cancelAnimationFrame(momentumFrame);
+        gesture = { id: event.pointerId, startX: event.clientX, startY: event.clientY, x: event.clientX, time: event.timeStamp, velocity: 0, dragging: false };
+      });
+
+      eventsRail.addEventListener('pointermove', (event) => {
+        if (!gesture || gesture.id !== event.pointerId) return;
+        const totalX = event.clientX - gesture.startX;
+        const totalY = event.clientY - gesture.startY;
+        if (!gesture.dragging && Math.abs(totalX) > 6 && Math.abs(totalX) > Math.abs(totalY)) {
+          gesture.dragging = true;
+          eventsRail.setPointerCapture(event.pointerId);
+        }
+        if (!gesture.dragging) return;
+        const elapsed = Math.max(1, event.timeStamp - gesture.time);
+        const distance = (gesture.x - event.clientX) * scrollGain;
+        eventsRail.scrollLeft += distance;
+        gesture.velocity = gesture.velocity * .65 + (distance / elapsed) * .35;
+        gesture.x = event.clientX;
+        gesture.time = event.timeStamp;
+      });
+
+      function finishGesture(event) {
+        if (!gesture || gesture.id !== event.pointerId) return;
+        if (gesture.dragging) {
+          suppressClick = true;
+          window.setTimeout(() => { suppressClick = false; }, 0);
+          let velocity = event.type === 'pointercancel' || event.timeStamp - gesture.time > 80 ? 0 : gesture.velocity;
+          let lastTime = performance.now();
+          const coast = (time) => {
+            const elapsed = Math.min(32, time - lastTime);
+            lastTime = time;
+            const before = eventsRail.scrollLeft;
+            eventsRail.scrollLeft += velocity * elapsed;
+            velocity *= Math.exp(-elapsed / 240);
+            if (Math.abs(velocity) > .02 && eventsRail.scrollLeft !== before) momentumFrame = requestAnimationFrame(coast);
+          };
+          if (!reduceMotion.matches && Math.abs(velocity) > .02) momentumFrame = requestAnimationFrame(coast);
+        }
+        gesture = null;
+      }
+
+      eventsRail.addEventListener('pointerup', finishGesture);
+      eventsRail.addEventListener('pointercancel', finishGesture);
+      eventsRail.addEventListener('click', (event) => {
+        if (suppressClick) { event.preventDefault(); event.stopPropagation(); }
+      }, true);
+      eventsRail.addEventListener('wheel', (event) => {
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || event.ctrlKey) return;
+        const before = eventsRail.scrollLeft;
+        eventsRail.scrollLeft += event.deltaX * scrollGain;
+        if (eventsRail.scrollLeft !== before) event.preventDefault();
+      }, { passive: false });
+
       document.querySelectorAll('.response-options button').forEach((button) => {
         button.addEventListener('click', () => {
           button.parentElement.querySelectorAll('button').forEach((choice) => choice.setAttribute('aria-pressed', String(choice === button)));
@@ -446,7 +512,7 @@
         if (!content) return;
         const article = document.createElement('article');
         article.className = 'post';
-        article.innerHTML = `<header class="post-header"><span class="post-avatar"><img src="assets/carla.png" alt="" /></span><div class="post-author"><strong>Carla G.</strong><time>Ahora</time></div><div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div></header><p class="post-copy"></p><div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>0</span></button><button class="post-action" type="button"><img class="comment-icon" src="assets/comment-icon.png" alt=""/><span>0</span></button></div><span class="post-seen">Visto por 0</span></div>`;
+        article.innerHTML = `<header class="post-header"><span class="post-avatar"><img src="assets/carla.png" alt="" /></span><div class="post-author"><strong>Carla G.</strong><time>Ahora</time></div><div class="post-tools"><button type="button" aria-label="Estadísticas"><img src="assets/stats.png" alt="" /></button><button type="button" aria-label="Más opciones"><img src="assets/dots.png" alt="" /></button></div></header><p class="post-copy"></p><div class="post-actions"><div class="post-action-set"><button class="post-action" type="button" data-like><img src="assets/like-icon.png" alt=""/><span>0</span></button><button class="post-action" type="button"><span class="comment-icon"><img src="assets/comment-figma.svg" alt=""/></span><span>0</span></button></div><span class="post-seen">Visto por 0</span></div>`;
         article.querySelector('.post-copy').textContent = content;
         article.querySelector('[data-like]').addEventListener('click', (e) => {
           const button = e.currentTarget;
